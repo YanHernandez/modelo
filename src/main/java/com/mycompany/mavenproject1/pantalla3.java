@@ -1,6 +1,6 @@
 package com.mycompany.mavenproject1;
 
-import static com.mycompany.mavenproject1.NewMain.socket;
+import static com.mycompany.mavenproject1.codigoAyuda.socket;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
@@ -27,23 +27,8 @@ import org.json.JSONObject;
 import static sun.applet.AppletResourceLoader.getImage;
 
 public class pantalla3 extends javax.swing.JFrame {
-
-    int funcion=3;
     
-    public pantalla3() {
-        initComponents();
-        setTitle("Pantalla "+funcion);
-        setExtendedState(this.MAXIMIZED_BOTH);
-        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
-        anchoPantalla= (int)screenSize.getWidth();
-        altoPantalla= (int)screenSize.getHeight();
-
-        crearDepositoAbajo("Deposito principal - Salida", "IZ");
-        crearDepositoAriba("Deposito principal - Entrada", "IZ");
-        conectarSocket(3);
-    }
-    
-    int[] listaPedidos=
+        int[] listaPedidos=
     {1,3,3,2,3,2,2,1,1,3,2,1,
     3,3,2,2,3,2,1,3,2,1,3,1,2,
     2,2,3,3,2,2,1,3,2,1,2,2,1,
@@ -53,149 +38,78 @@ public class pantalla3 extends javax.swing.JFrame {
     1,2,3,2,3,2,1,3,2,1,3,2,1};
     
     int posicion=0;
-    
+    int velocidad;
+
+    int numPantalla=3;
     int  anchoPantalla;
     int altoPantalla;
-    
-    JPanel depositoAbajo;
-    JPanel depositoArriba;
-    
-    int anchoDepositovoArriba;
-    int altoDepositovoArriba;
-    int anchoDepositovoAbajo;
-    int altoDepositovoAbajo;
-
-    double cantidadDeposito=343;
-    JLabel labelCantidadDeposito;
-
-    JLabel cantidad,cantidad2;
-   
     int numCamiones=1;
     
-    public void crearDepositoAbajo(String nombre,String x){
-        codigoAyuda c=new codigoAyuda();
-        depositoAbajo=c.crearDepositoAbajo(nombre, x,anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla);
-        labelCantidadDeposito=c.formatoLabelCantidad();
+    public JPanel depositoAbajo=new JPanel();
+    public JPanel depositoArriba;
+    
+    public int anchoDepositovoArriba;
+    public int altoDepositovoArriba;
+    public int anchoDepositovoAbajo;
+    public int altoDepositovoAbajo;
+
+    public double cantidadDeposito=343;
+    public JLabel labelCantidadDeposito=new JLabel();
+
+    public JLabel cantidad,cantidad2;
+    codigoAyuda codigo;    
+    public pantalla3() {
+        initComponents();
+        setTitle("Pantalla "+numPantalla);
+        setExtendedState(this.MAXIMIZED_BOTH);
+        Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
+        anchoPantalla= (int)screenSize.getWidth();
+        altoPantalla= (int)screenSize.getHeight();
+        codigo=new codigoAyuda(anchoPantalla, altoPantalla, depositoAbajo, depositoArriba, labelCantidadDeposito, contenedor,numPantalla);       
+        codigo.setPantalla3(this);
+        this.depositoAbajo=codigo.crearDepositoAbajo("Deposito principal - Salida", "IZ", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
+        labelCantidadDeposito=codigo.formatoLabelCantidad();
         labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
         depositoAbajo.add(labelCantidadDeposito);
-        contenedor.add(depositoAbajo);
-        repaint();
+        this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Entrada", "IZ", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
+        codigo.conectarSocket(this);
+        velocidad=codigo.velocidad;
     }
     
-    public void crearDepositoAriba(String nombre,String x){
-        codigoAyuda c=new codigoAyuda();
-        depositoArriba=c.crearDepositoAriba(nombre, x, anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla);
-        contenedor.add(depositoArriba);
-        repaint();
+    public void empezarSimulacion(int numCamiones){
+        this.numCamiones=numCamiones;
+        empezar h=new empezar();
+        h.start();
     }
     
-    public void conectarSocket(int numPantalla){
-                IO.Options opts = new IO.Options();
-        try {
-            socket = IO.socket("http://159.65.104.236:3001/");
-            socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject jsono = new JSONObject();
-                    try {                        
-                        jsono.put("nombre", "pantalla"+numPantalla);
-                        jsono.put("id", socket.id());
-                        jsono.put("function", numPantalla);
-                        socket.emit("conectandoPantalla", jsono); 
-                    } catch (JSONException ex) {
-                    }
-                }
-            }).on("event", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    System.out.println(obj.toString());
-                }
-            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.exit(0);
-                }
-            }).on("pantallaUsado", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        String nombre = obj.getString("nombre");
-                        JOptionPane.showMessageDialog(null, "Funcion en uso, elija otra");
-                        dispose();
-                    }catch(JSONException j){
-                        j.printStackTrace();
-                    }
-                }
-           }).on("arranca", new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        System.err.println(obj.toString());
-                        numCamiones = obj.getInt("numCamiones1");
-                        System.out.println("arranca");
-                        empezar h=new empezar();
-                        h.start();
-                        
-                    }catch(Exception e){       
-                    }
-                }
-           }).on("devuleve", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-//                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        System.out.println("devuelve");
-                        derizq h=new derizq();
-                        h.start();
-                    }catch(Exception e){       
-                    }
-                }
-           }).on("modificarCantidad", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        String nombre = obj.getString("cantidad");
-                        System.out.println("Modificar en "+nombre);
-                    }catch(Exception e){       
-                    }
-                }
-           })        
-                    ;
-            socket.connect();
-            
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    
-    private class empezar extends Thread{   
+    public class empezar extends Thread{   
         @Override
         public void run(){
+            
             izqder[] h=new izqder[numCamiones];
+            
             for (int i = 0; i < numCamiones; i++) {
                 h[i]=new izqder();
                 h[i].start();
+                
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException ex) {
-                    Logger.getLogger(pantalla3.class.getName()).log(Level.SEVERE, null, ex);
+                    Logger.getLogger(pantalla1.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
-        
+    }
+    public void moverIzqder(){
+        izqder h=new izqder();
+        h.start();
     }
     
     private class izqder extends Thread{   
        
         @Override
         public void run(){
-            codigoAyuda c=new codigoAyuda();
-            JLabel camion=c.crearCamionB(anchoPantalla,"/camion1.gif");
+            JLabel camion=codigo.crearCamionB(anchoPantalla,"/camion1.gif");
             contenedor.add(camion);
             
             int x=depositoAbajo.getWidth()-camion.getWidth();
@@ -208,31 +122,33 @@ public class pantalla3 extends javax.swing.JFrame {
             try {
                 j.put("tofunction", 2);
                 j.put("cantidad", -30);
-                NewMain.socket.emit("modificarCantidad",j);
+                socket.emit("modificarCantidad",j);
             } catch (JSONException ex) {
                 Logger.getLogger(pantalla3.class.getName()).log(Level.SEVERE, null, ex);
             }
             while (true) {
-                x++;
+                x+=2;
                 try{
-                    Thread.sleep(4);
+                    Thread.sleep(velocidad);
                 }catch(InterruptedException ex){
                     break;
                 }
                 camion.setLocation(x, y);
                 repaint();
-                if(x==anchoPantalla-camion.getWidth()){
+                if(x==anchoPantalla-camion.getWidth() || x+1==anchoPantalla-camion.getWidth()){
                     try {      
                         JSONObject j2=new JSONObject();
-                        j2.put("tofunction", listaPedidos[posicion]+3);
+                        int pantallaAEnviar=listaPedidos[posicion]+3;
+                        j2.put("tofunction",pantallaAEnviar);
                         socket.emit("siguientePantalla",j2);
-                        
+                        posicion++;
                         if(posicion==listaPedidos.length){
                             posicion=0;
                         }
                     } catch (Exception e) {
                     }
                 }
+                
                 
                 if(x==anchoPantalla){
                     
@@ -244,8 +160,7 @@ public class pantalla3 extends javax.swing.JFrame {
     
     private class derizq extends Thread{   
         public void run(){
-        codigoAyuda c=new codigoAyuda();
-        JLabel l=c.crearCamionB(anchoPantalla,"/camion2.gif");
+        JLabel l=codigo.crearCamionB(anchoPantalla,"/camion2.gif");
         contenedor.add(l);
         int x=anchoPantalla;
         int y=(int)(depositoArriba.getHeight()-l.getHeight());
@@ -254,15 +169,15 @@ public class pantalla3 extends javax.swing.JFrame {
         repaint();
         
             while(true){
-                x--;
+                x-=2;
                 try{
-                    Thread.sleep(4);
+                    Thread.sleep(velocidad);
                 }catch(InterruptedException ex){JOptionPane.showMessageDialog(null, ex);}
                 
                 l.setLocation(x, y);
                 repaint();
                 
-                if(x==0){
+                if(x==0 || x-1==0){
                     try {
                         JSONObject j=new JSONObject();
                         j.put("tofunction", 1);

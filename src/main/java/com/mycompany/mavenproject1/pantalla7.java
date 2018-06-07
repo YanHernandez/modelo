@@ -1,167 +1,72 @@
-
 package com.mycompany.mavenproject1;
-
 import static com.mycompany.mavenproject1.NewMain.socket;
 import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
-import java.awt.Color;
 import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.Label;
 import java.awt.event.KeyEvent;
-import java.awt.geom.AffineTransform;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import javax.swing.Icon;
-import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+/**
+ *
+ * @author Yan
+ */
 public class pantalla7 extends javax.swing.JFrame {
 
-    int funcion=7;
+    int numPantalla=7;
+    int velocidad;
+    int  anchoPantalla;
+    int altoPantalla;
+    
+    
+    public JPanel depositoAbajo=new JPanel();
+    public JPanel depositoArriba;
+    
+    public int anchoDepositovoArriba;
+    public int altoDepositovoArriba;
+    public int anchoDepositovoAbajo;
+    public int altoDepositovoAbajo;
+
+    public double cantidadDeposito=343;
+    public JLabel labelCantidadDeposito=new JLabel();
+
+    public JLabel cantidad,cantidad2;
+    codigoAyuda codigo;    
     public pantalla7() {
         initComponents();
-        setTitle("Pantalla "+funcion);
+        setTitle("Pantalla "+numPantalla);
         setExtendedState(this.MAXIMIZED_BOTH);
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         anchoPantalla= (int)screenSize.getWidth();
         altoPantalla= (int)screenSize.getHeight();
-
-        crearDepositoAbajo("Deposito principal - Entrada", "DE");
-        crearDepositoAriba("Deposito principal - Salida", "DE");
-        conectarSocket(funcion);
-    }
-    
-    int  anchoPantalla;
-    int altoPantalla;
-    
-    JPanel depositoAbajo;
-    JPanel depositoArriba;
-    
-    int anchoDepositovoArriba;
-    int altoDepositovoArriba;
-    int anchoDepositovoAbajo;
-    int altoDepositovoAbajo;
-
-    double cantidadDeposito=343;
-    JLabel labelCantidadDeposito;
-
-    JLabel cantidad,cantidad2;
-    
-    public void crearDepositoAbajo(String nombre,String x){
-        codigoAyuda c=new codigoAyuda();
-        depositoAbajo=c.crearDepositoAbajo(nombre, x,anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla);
-        labelCantidadDeposito=c.formatoLabelCantidad();
+        codigo=new codigoAyuda(anchoPantalla, altoPantalla, depositoAbajo, depositoArriba, labelCantidadDeposito, contenedor,numPantalla);       
+        codigo.setPantalla7(this);
+        this.depositoAbajo=codigo.crearDepositoAbajo("Deposito principal - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
+        labelCantidadDeposito=codigo.formatoLabelCantidad();
         labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
         depositoAbajo.add(labelCantidadDeposito);
-        contenedor.add(depositoAbajo);
-        repaint();
+        this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
+        codigo.conectarSocket(this);
+        velocidad=codigo.velocidad;
     }
     
-    public void crearDepositoAriba(String nombre,String x){
-        codigoAyuda c=new codigoAyuda();
-        depositoArriba=c.crearDepositoAriba(nombre, x, anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla);
-        contenedor.add(depositoArriba);
-        repaint();
+    public void moverIzqder(){
+        izqder h=new izqder();
+        h.start();
     }
     
-    public void conectarSocket(int numPantalla){
-                IO.Options opts = new IO.Options();
-        try {
-            socket = IO.socket("http://159.65.104.236:3001/");
-            socket.on(Socket.EVENT_CONNECT, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject jsono = new JSONObject();
-                    try {                        
-                        jsono.put("nombre", "pantalla"+numPantalla);
-                        jsono.put("id", socket.id());
-                        jsono.put("function", numPantalla);
-                        socket.emit("conectandoPantalla", jsono); 
-                    } catch (JSONException ex) {
-                    }
-                }
-            }).on("event", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    System.out.println(obj.toString());
-                }
-            }).on(Socket.EVENT_DISCONNECT, new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    System.exit(0);
-                }
-            }).on("pantallaUsado", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        String nombre = obj.getString("nombre");
-                        JOptionPane.showMessageDialog(null, "Funcion en uso, elija otra");
-                        dispose();
-                    }catch(JSONException j){
-                        j.printStackTrace();
-                    }
-                }
-           }).on("arranca", new Emitter.Listener() {
-
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        
-                        System.out.println("arranca");
-                        izqder h=new izqder();
-                        h.start();
-                    }catch(Exception e){       
-                        System.out.println(e);
-                    }
-                }
-           }).on("devuleve", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-//                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        System.out.println("devuelve");
-                        derizq h=new derizq();
-                        h.start();
-                    }catch(Exception e){       
-                    }
-                }
-           }).on("modificarCantidad", new Emitter.Listener() {
-                @Override
-                public void call(Object... args) {
-                    JSONObject obj = (JSONObject) args[0];
-                    try{
-                        String nombre = obj.getString("cantidad");
-                        System.out.println("Modificar en "+nombre);
-                    }catch(Exception e){       
-                    }
-                }
-           })        
-                    ;
-            socket.connect();
-            
-        } catch (URISyntaxException ex) {
-            Logger.getLogger(NewMain.class.getName()).log(Level.SEVERE, null, ex);
-        }
-    }
-    private class izqder extends Thread{   
+    public class izqder extends Thread{   
        
         @Override
         public void run(){
-            codigoAyuda c=new codigoAyuda();
-            JLabel camion=c.crearCamionB(anchoPantalla,"/camion1.gif");
+            JLabel camion=codigo.crearCamionB(anchoPantalla,"/camion1.gif");
             contenedor.add(camion);
             
             int x=0-camion.getWidth();
@@ -170,23 +75,23 @@ public class pantalla7 extends javax.swing.JFrame {
             repaint();
 
             while (true) {
-                x++;
+                x+=2;
                 try{
-                    Thread.sleep(4);
+                    Thread.sleep(velocidad);
                 }catch(InterruptedException ex){
                     break;
                 }
                 camion.setLocation(x, y);
-                if(x==anchoPantalla-anchoDepositovoAbajo-camion.getWidth()){
+                if(x==anchoPantalla-anchoDepositovoAbajo-camion.getWidth() || x+1==anchoPantalla-anchoDepositovoAbajo-camion.getWidth()){
                     
                 }
-                if(x==anchoPantalla-anchoDepositovoAbajo){
+                if(x==anchoPantalla-anchoDepositovoAbajo || x+1==anchoPantalla-anchoDepositovoAbajo){
                     cantidadDeposito+=90;
                     labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
                     try {      
                         
                         JSONObject j=new JSONObject();
-                        j.put("tofunction", 8);
+                        j.put("tofunction", 3);
                         j.put("cantidad", 90);
                         NewMain.socket.emit("modificarCantidad",j);
                         
@@ -205,8 +110,7 @@ public class pantalla7 extends javax.swing.JFrame {
     
     private class derizq extends Thread{   
         public void run(){
-        codigoAyuda c=new codigoAyuda();
-        JLabel l=c.crearCamionB(anchoPantalla,"/camion2.gif");
+        JLabel l=codigo.crearCamionB(anchoPantalla,"/camion2.gif");
         contenedor.add(l);
         int x=anchoPantalla-depositoArriba.getWidth();
         int y=(int)(depositoArriba.getHeight()-l.getHeight());
@@ -215,28 +119,29 @@ public class pantalla7 extends javax.swing.JFrame {
         repaint();
         
             while(true){
-                x--;
+                x-=2;
                 try{
-                    Thread.sleep(4);
+                    Thread.sleep(velocidad);
                 }catch(InterruptedException ex){JOptionPane.showMessageDialog(null, ex);}
                 
                 l.setLocation(x, y);
                 repaint();
                 
-                if(x==0){
+                if(x==0 || x-1==0){
                     try {
                         JSONObject j=new JSONObject();
-                        j.put("tofunction", 3);
+                        j.put("tofunction", 7);
                     socket.emit("anteriorsiguientePantalla",j);
                     } catch (Exception e) {
                     }
                 }
-                if(x==0-l.getWidth()){
+                if(x==0-l.getWidth() || x-1==0-l.getWidth()){
                     break;
                 }
             }
         }
     }
+    
 
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
@@ -304,14 +209,254 @@ public class pantalla7 extends javax.swing.JFrame {
                 }
             }
         } catch (ClassNotFoundException ex) {
-            java.util.logging.Logger.getLogger(pantalla1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(pantalla7.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (InstantiationException ex) {
-            java.util.logging.Logger.getLogger(pantalla1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(pantalla7.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (IllegalAccessException ex) {
-            java.util.logging.Logger.getLogger(pantalla1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(pantalla7.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         } catch (javax.swing.UnsupportedLookAndFeelException ex) {
-            java.util.logging.Logger.getLogger(pantalla1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            java.util.logging.Logger.getLogger(pantalla7.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
+        //</editor-fold>
         //</editor-fold>
         //</editor-fold>
         //</editor-fold>
