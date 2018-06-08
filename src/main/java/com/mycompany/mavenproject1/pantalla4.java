@@ -41,18 +41,18 @@ public class pantalla4 extends javax.swing.JFrame {
     codigoAyuda codigo;    
     public pantalla4() {
         initComponents();
-        setTitle("Pantalla "+numPantalla);
+        setTitle("Pantalla 3");
         setExtendedState(this.MAXIMIZED_BOTH);
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         anchoPantalla= (int)screenSize.getWidth();
         altoPantalla= (int)screenSize.getHeight();
         codigo=new codigoAyuda(anchoPantalla, altoPantalla, depositoAbajo, depositoArriba, labelCantidadDeposito, contenedor,numPantalla);       
         codigo.setPantalla4(this);
-        this.depositoAbajo=codigo.crearDepositoAbajo("Deposito principal - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
+        this.depositoAbajo=codigo.crearDepositoAbajo("Procesadora de carbon - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
         labelCantidadDeposito=codigo.formatoLabelCantidad();
-        labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+        labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
         depositoAbajo.add(labelCantidadDeposito);
-        this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
+        this.depositoArriba=codigo.crearDepositoAriba("Procesadora de carbon - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
         codigo.conectarSocket(this);
         velocidad=codigo.velocidad;
     }
@@ -87,7 +87,7 @@ public class pantalla4 extends javax.swing.JFrame {
                 }
                 if(x==anchoPantalla-anchoDepositovoAbajo || x+1==anchoPantalla-anchoDepositovoAbajo){
                     cantidadDeposito+=90;
-                    labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+                    labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
                     try {      
                         Thread.sleep(2500*velocidad);                        
                         derizq h=new derizq();

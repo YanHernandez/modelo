@@ -35,7 +35,7 @@ public class pantalla2 extends javax.swing.JFrame {
     public int anchoDepositovoAbajo;
     public int altoDepositovoAbajo;
 
-    public double cantidadDeposito=343;
+    public double cantidadDeposito=720;
     public JLabel labelCantidadDeposito=new JLabel();
 
     public JLabel cantidad,cantidad2;
@@ -53,11 +53,11 @@ public class pantalla2 extends javax.swing.JFrame {
         altoPantalla= (int)screenSize.getHeight();
         codigo=new codigoAyuda(anchoPantalla, altoPantalla, depositoAbajo, depositoArriba, labelCantidadDeposito, contenedor,numPantalla);       
         codigo.setPantalla2(this);
-        this.depositoAbajo=codigo.crearDepositoAbajo("Deposito principal - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
+        this.depositoAbajo=codigo.crearDepositoAbajo("Cabon sin procesar - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
         labelCantidadDeposito=codigo.formatoLabelCantidad();
-        labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+        labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
         depositoAbajo.add(labelCantidadDeposito);
-        this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
+        this.depositoArriba=codigo.crearDepositoAriba("Cabon sin procesar - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
         codigo.conectarSocket(this);
         
         retro=retro("/retroFija.png");
@@ -162,7 +162,7 @@ public class pantalla2 extends javax.swing.JFrame {
                 }
                 if(x==anchoPantalla-anchoDepositovoAbajo || x-1==anchoPantalla-anchoDepositovoAbajo){
                     cantidadDeposito+=90;
-                    labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+                    labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
                     try {      
                         
                         JSONObject j=new JSONObject();

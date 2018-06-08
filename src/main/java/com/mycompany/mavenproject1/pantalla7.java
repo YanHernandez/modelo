@@ -35,25 +35,25 @@ public class pantalla7 extends javax.swing.JFrame {
     public int anchoDepositovoAbajo;
     public int altoDepositovoAbajo;
 
-    public double cantidadDeposito=343;
+    public double cantidadDeposito=0;
     public JLabel labelCantidadDeposito=new JLabel();
 
     public JLabel cantidad,cantidad2;
     codigoAyuda codigo;    
     public pantalla7() {
         initComponents();
-        setTitle("Pantalla "+numPantalla);
+        setTitle("Pantalla 4");
         setExtendedState(this.MAXIMIZED_BOTH);
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         anchoPantalla= (int)screenSize.getWidth();
         altoPantalla= (int)screenSize.getHeight();
         codigo=new codigoAyuda(anchoPantalla, altoPantalla, depositoAbajo, depositoArriba, labelCantidadDeposito, contenedor,numPantalla);       
         codigo.setPantalla7(this);
-        this.depositoAbajo=codigo.crearDepositoAbajo("Deposito principal - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
+        this.depositoAbajo=codigo.crearDepositoAbajo("Carbon procesado - Entrada", "DE", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
         labelCantidadDeposito=codigo.formatoLabelCantidad();
-        labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+        labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
         depositoAbajo.add(labelCantidadDeposito);
-        this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
+        this.depositoArriba=codigo.crearDepositoAriba("Carbon procesado - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
         codigo.conectarSocket(this);
         velocidad=codigo.velocidad;
     }
@@ -62,6 +62,14 @@ public class pantalla7 extends javax.swing.JFrame {
         izqder h=new izqder();
         h.start();
     }
+    
+    public void moverDerizq(){
+        derizq h=new derizq();
+        h.start();
+    }
+    
+    
+    
     
     public class izqder extends Thread{   
        
@@ -87,19 +95,22 @@ public class pantalla7 extends javax.swing.JFrame {
                     
                 }
                 if(x==anchoPantalla-anchoDepositovoAbajo || x+1==anchoPantalla-anchoDepositovoAbajo){
-                    cantidadDeposito+=90;
-                    labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
-                    break;
-                }
-                if(cantidadDeposito>1000){
-                      JSONObject j2=new JSONObject();
-                    try {
-                        //                        int pantallaAEnviar=listaPedidos[posicion]+3;
-                        j2.put("tofunction",8);
-                    } catch (JSONException ex) {
-                        Logger.getLogger(pantalla7.class.getName()).log(Level.SEVERE, null, ex);
+                    cantidadDeposito+=30;
+                    labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
+                    try {      
+                        JSONObject j=new JSONObject();
+                        j.put("tofunction", 5);
+                        j.put("cantidad", 30);
+                        socket.emit("modificarCantidad",j);
+                    } catch (Exception e) {
                     }
-                        socket.emit("siguientePantalla",j2);
+                    
+                    if(cantidadDeposito>1000){
+                        cantidadDeposito=0;
+                        labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
+                    }
+                    moverDerizq();
+                    break;
                 }
                 repaint();
             }

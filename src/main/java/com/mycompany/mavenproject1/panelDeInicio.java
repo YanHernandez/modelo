@@ -6,15 +6,10 @@
 package com.mycompany.mavenproject1;
 
 import static com.mycompany.mavenproject1.NewMain.socket;
-import io.socket.client.IO;
-import io.socket.client.Socket;
-import io.socket.emitter.Emitter;
 import java.net.URISyntaxException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.swing.JOptionPane;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  *
@@ -51,10 +46,6 @@ public class panelDeInicio extends javax.swing.JFrame {
         btnPantalla2 = new javax.swing.JButton();
         btnPantalla3 = new javax.swing.JButton();
         btnPantalla4 = new javax.swing.JButton();
-        btnPantalla5 = new javax.swing.JButton();
-        btnPantalla6 = new javax.swing.JButton();
-        btnPantalla7 = new javax.swing.JButton();
-        btnPantalla8 = new javax.swing.JButton();
 
         setDefaultCloseOperation(javax.swing.WindowConstants.EXIT_ON_CLOSE);
         getContentPane().setLayout(new javax.swing.OverlayLayout(getContentPane()));
@@ -107,38 +98,6 @@ public class panelDeInicio extends javax.swing.JFrame {
             }
         });
 
-        btnPantalla5.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnPantalla5.setText("Pantalla 5");
-        btnPantalla5.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPantalla5ActionPerformed(evt);
-            }
-        });
-
-        btnPantalla6.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnPantalla6.setText("Pantalla 6");
-        btnPantalla6.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPantalla6ActionPerformed(evt);
-            }
-        });
-
-        btnPantalla7.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnPantalla7.setText("Pantalla 7");
-        btnPantalla7.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPantalla7ActionPerformed(evt);
-            }
-        });
-
-        btnPantalla8.setFont(new java.awt.Font("Tahoma", 1, 16)); // NOI18N
-        btnPantalla8.setText("Pantalla 8");
-        btnPantalla8.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btnPantalla8ActionPerformed(evt);
-            }
-        });
-
         javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
         jPanel1.setLayout(jPanel1Layout);
         jPanel1Layout.setHorizontalGroup(
@@ -147,27 +106,19 @@ public class panelDeInicio extends javax.swing.JFrame {
                 .addContainerGap()
                 .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
                     .addGroup(jPanel1Layout.createSequentialGroup()
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnPantalla1, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPantalla5, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnPantalla1)
                         .addGap(22, 22, 22)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnPantalla6, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPantalla2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnPantalla2)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnPantalla3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPantalla7, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
+                        .addComponent(btnPantalla3)
                         .addGap(18, 18, 18)
-                        .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btnPantalla8, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                            .addComponent(btnPantalla4, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
+                        .addComponent(btnPantalla4))
                     .addGroup(jPanel1Layout.createSequentialGroup()
                         .addComponent(jLabel1)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
                         .addComponent(jTextField1, javax.swing.GroupLayout.PREFERRED_SIZE, 193, javax.swing.GroupLayout.PREFERRED_SIZE))
                     .addComponent(jLabel2))
-                .addContainerGap(29, Short.MAX_VALUE))
+                .addContainerGap(33, Short.MAX_VALUE))
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -184,13 +135,7 @@ public class panelDeInicio extends javax.swing.JFrame {
                     .addComponent(btnPantalla2)
                     .addComponent(btnPantalla3)
                     .addComponent(btnPantalla4))
-                .addGap(18, 18, 18)
-                .addGroup(jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.BASELINE)
-                    .addComponent(btnPantalla5)
-                    .addComponent(btnPantalla6)
-                    .addComponent(btnPantalla7)
-                    .addComponent(btnPantalla8))
-                .addContainerGap(73, Short.MAX_VALUE))
+                .addContainerGap(120, Short.MAX_VALUE))
         );
 
         getContentPane().add(jPanel1);
@@ -203,20 +148,20 @@ public class panelDeInicio extends javax.swing.JFrame {
     }//GEN-LAST:event_jTextField1ActionPerformed
 
     private void btnPantalla1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla1ActionPerformed
-        pantalla1 p1=new pantalla1();
-        p1.setVisible(true);
+        pantalla2 p2=new pantalla2();
+        p2.setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPantalla1ActionPerformed
 
     private void btnPantalla2ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla2ActionPerformed
-        pantalla2 p2=new pantalla2();
-        p2.setVisible(true);
+        pantalla3 p3=new pantalla3();
+        p3.setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPantalla2ActionPerformed
 
     private void btnPantalla3ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla3ActionPerformed
-        pantalla3 p3=new pantalla3();
-        p3.setVisible(true);
+        pantalla7 p7=new pantalla7();
+        p7.setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPantalla3ActionPerformed
 
@@ -225,28 +170,6 @@ public class panelDeInicio extends javax.swing.JFrame {
         p4.setVisible(true);
         dispose();
     }//GEN-LAST:event_btnPantalla4ActionPerformed
-
-    private void btnPantalla5ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla5ActionPerformed
-        pantalla5 p5=new pantalla5();
-        p5.setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnPantalla5ActionPerformed
-
-    private void btnPantalla6ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla6ActionPerformed
-        pantalla6 p6=new pantalla6();
-        p6.setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnPantalla6ActionPerformed
-
-    private void btnPantalla7ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla7ActionPerformed
-        pantalla7 p7=new pantalla7();
-        p7.setVisible(true);
-        dispose();
-    }//GEN-LAST:event_btnPantalla7ActionPerformed
-
-    private void btnPantalla8ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_btnPantalla8ActionPerformed
-        // TODO add your handling code here:
-    }//GEN-LAST:event_btnPantalla8ActionPerformed
 
     private class empezar extends Thread{   
         public void run(){
@@ -321,10 +244,6 @@ public class panelDeInicio extends javax.swing.JFrame {
     private javax.swing.JButton btnPantalla2;
     private javax.swing.JButton btnPantalla3;
     private javax.swing.JButton btnPantalla4;
-    private javax.swing.JButton btnPantalla5;
-    private javax.swing.JButton btnPantalla6;
-    private javax.swing.JButton btnPantalla7;
-    private javax.swing.JButton btnPantalla8;
     private javax.swing.JLabel jLabel1;
     private javax.swing.JLabel jLabel2;
     private javax.swing.JPanel jPanel1;

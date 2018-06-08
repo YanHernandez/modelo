@@ -65,7 +65,7 @@ public class pantalla3 extends javax.swing.JFrame {
     boolean semaforo=true;
     public pantalla3() {
         initComponents();
-        setTitle("Pantalla "+numPantalla);
+        setTitle("Pantalla 2");
         setExtendedState(this.MAXIMIZED_BOTH);
         Dimension screenSize = java.awt.Toolkit.getDefaultToolkit().getScreenSize();
         anchoPantalla= (int)screenSize.getWidth();
@@ -74,7 +74,7 @@ public class pantalla3 extends javax.swing.JFrame {
         codigo.setPantalla3(this);
         this.depositoAbajo=codigo.crearDepositoAbajo("Deposito principal - Salida", "IZ", anchoDepositovoAbajo, altoDepositovoAbajo, anchoPantalla, altoPantalla, contenedor, this);
         labelCantidadDeposito=codigo.formatoLabelCantidad();
-        labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+        labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
         depositoAbajo.add(labelCantidadDeposito);
         this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Entrada", "IZ", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
         codigo.conectarSocket(this);
@@ -147,7 +147,7 @@ public class pantalla3 extends javax.swing.JFrame {
             camion.setLocation(x, (int)(y));
             repaint();
             cantidadDeposito-=30;
-            labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
+            labelCantidadDeposito.setText(cantidadDeposito+" TONELADAS");
             JSONObject j=new JSONObject();
             try {
                 j.put("tofunction", 1);

@@ -212,7 +212,7 @@ public class codigoAyuda {
     
     public JLabel formatoLabelCantidad(){
         JLabel l=new JLabel();
-        l.setFont(new Font("Tahoma", 1, 16));
+        l.setFont(new Font("Tahoma", 1, 20));
         l.setForeground(Color.white);
 
         return l;
