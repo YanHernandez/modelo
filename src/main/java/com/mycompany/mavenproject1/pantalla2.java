@@ -192,7 +192,7 @@ public class pantalla2 extends javax.swing.JFrame {
         contenedor.add(l);
         int x=anchoPantalla-depositoArriba.getWidth();
         int y=(int)(depositoArriba.getHeight()-l.getHeight());
-            System.out.println(y);
+            
         contenedor.add(l);
         l.setLocation(x, (int)(y));
         repaint();
