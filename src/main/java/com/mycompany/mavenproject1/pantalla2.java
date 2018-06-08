@@ -5,10 +5,14 @@ import io.socket.client.IO;
 import io.socket.client.Socket;
 import io.socket.emitter.Emitter;
 import java.awt.Dimension;
+import java.awt.Image;
 import java.awt.event.KeyEvent;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.swing.Icon;
+import javax.swing.ImageIcon;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
@@ -17,13 +21,14 @@ import org.json.JSONObject;
 public class pantalla2 extends javax.swing.JFrame {
 
     int velocidad;
-    int numPantalla=2;
+    int numPantalla=1;
     int  anchoPantalla;
     int altoPantalla;
     
     
     public JPanel depositoAbajo=new JPanel();
     public JPanel depositoArriba;
+    JLabel retro;
     
     public int anchoDepositovoArriba;
     public int altoDepositovoArriba;
@@ -34,7 +39,11 @@ public class pantalla2 extends javax.swing.JFrame {
     public JLabel labelCantidadDeposito=new JLabel();
 
     public JLabel cantidad,cantidad2;
+    int numCamiones=1;
     codigoAyuda codigo;    
+    
+    int camionesEnCola=0;
+    boolean semaforo=true;
     public pantalla2() {
         initComponents();
         setTitle("Pantalla "+numPantalla);
@@ -50,18 +59,67 @@ public class pantalla2 extends javax.swing.JFrame {
         depositoAbajo.add(labelCantidadDeposito);
         this.depositoArriba=codigo.crearDepositoAriba("Deposito principal - Salida", "DE", anchoDepositovoArriba, altoDepositovoArriba, anchoPantalla, altoPantalla, contenedor, this);
         codigo.conectarSocket(this);
+        
+        retro=retro("/retroFija.png");
+        contenedor.add(retro);        
+        
         this.velocidad=codigo.velocidad;
     }
     
-    public void moverIzqder(){
+    
+    public void empezarSimulacion(int numCamiones){
+        this.camionesEnCola=numCamiones;
+//        empezar h=new empezar();
         izqder h=new izqder();
         h.start();
+    }
+    
+    public void moverDerizq(){
+        derizq h=new derizq();
+        h.start();
+    }
+    
+    public void moverIzqder(){
+        if(camionesEnCola==0 && semaforo==false){
+            camionesEnCola++;
+        }else if(camionesEnCola==0 && semaforo==true ){
+            izqder h=new izqder();
+            h.start();
+        }else if(camionesEnCola>0 && semaforo==true){
+            izqder h=new izqder();
+            h.start();
+        }else if(camionesEnCola>0 && semaforo==false){
+            camionesEnCola++;
+        }
+        
+    }
+    
+    public class empezar extends Thread{   
+        @Override
+        public void run(){
+            
+            izqder[] h=new izqder[numCamiones];
+            
+            for (int i = 0; i < numCamiones; i++) {
+                h[i]=new izqder();
+                h[i].start();
+                try {
+                    Thread.sleep(2500*velocidad);
+                } catch (InterruptedException ex) {
+                    Logger.getLogger(pantalla1.class.getName()).log(Level.SEVERE, null, ex);
+                }
+            }
+        }
     }
     
     public class izqder extends Thread{   
        
         @Override
         public void run(){
+            semaforo=false;
+            if(camionesEnCola>0){
+                camionesEnCola--;
+            }
             JLabel camion=codigo.crearCamionA("/camion1.gif");
             contenedor.add(camion);
             
@@ -78,6 +136,27 @@ public class pantalla2 extends javax.swing.JFrame {
                     break;
                 }
                 camion.setLocation(x, y);
+                repaint();
+                if(x==retro.getLocation().x-30 || x-1==retro.getLocation().x-30){
+                    try{
+                        contenedor.remove(retro);
+                        retro=retro("/retro.gif");
+                        contenedor.add(retro);
+                        repaint();
+                        Thread.sleep(1750*velocidad);
+                        contenedor.remove(retro);
+                        retro=retro("/retroFija.png");
+                        contenedor.add(retro);
+                        repaint();
+                        semaforo=true;
+                        if(camionesEnCola>0){
+                            moverIzqder();
+                        }
+                    }catch(InterruptedException ex){
+                        JOptionPane.showMessageDialog(null, ex);
+                    }
+                }
+                
                 if(x>=anchoPantalla-anchoDepositovoAbajo-camion.getWidth()){
                     
                 }
@@ -128,12 +207,7 @@ public class pantalla2 extends javax.swing.JFrame {
                 repaint();
                 
                 if(x==0 || x+1==0){
-                    try {
-                        JSONObject j=new JSONObject();
-                        j.put("tofunction", 1);
-                        socket.emit("anteriorsiguientePantalla",j);
-                    } catch (Exception e) {
-                    }
+                    moverIzqder();
                 }
                 if(x+1==0-l.getWidth() || x+1==0-l.getWidth()){
                     break;
@@ -142,6 +216,24 @@ public class pantalla2 extends javax.swing.JFrame {
         }
     }
 
+    
+    public JLabel retro(String retro){
+        JLabel lRetro  = new JLabel();
+        double anchoCamion=anchoPantalla*2/10;
+        double altoCamion=anchoCamion*1517/2500;
+        lRetro.setSize((int)anchoCamion,(int)altoCamion);
+
+        URL url = this.getClass().getResource(retro);  
+        ImageIcon fot = new ImageIcon(url);  
+
+        Icon icono = new ImageIcon(fot.getImage().getScaledInstance(lRetro.getWidth(), lRetro.getHeight(), Image.SCALE_DEFAULT));
+        lRetro.setIcon(icono);
+
+        int x=lRetro.getWidth();
+        int y=(int)(altoPantalla-(lRetro.getHeight()+(lRetro.getHeight()*7/10)));
+        lRetro.setLocation(x, (int)(y));
+        return lRetro;    
+    }
     @SuppressWarnings("unchecked")
     // <editor-fold defaultstate="collapsed" desc="Generated Code">//GEN-BEGIN:initComponents
     private void initComponents() {

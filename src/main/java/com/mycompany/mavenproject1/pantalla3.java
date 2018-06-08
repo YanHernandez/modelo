@@ -36,6 +36,8 @@ public class pantalla3 extends javax.swing.JFrame {
     1,2,3,2,3,2,1,3,2,1,3,2,1,
     2,2,3,3,2,2,1,3,2,1,2,2,1,
     1,2,3,2,3,2,1,3,2,1,3,2,1};
+        
+        
     
     int posicion=0;
     int velocidad;
@@ -58,6 +60,9 @@ public class pantalla3 extends javax.swing.JFrame {
 
     public JLabel cantidad,cantidad2;
     codigoAyuda codigo;    
+    
+    int camionesEnCola=0;
+    boolean semaforo=true;
     public pantalla3() {
         initComponents();
         setTitle("Pantalla "+numPantalla);
@@ -93,15 +98,36 @@ public class pantalla3 extends javax.swing.JFrame {
                 h[i].start();
                 
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(500*velocidad);
                 } catch (InterruptedException ex) {
                     Logger.getLogger(pantalla1.class.getName()).log(Level.SEVERE, null, ex);
                 }
             }
         }
     }
+    
+    public void verificarCola(){
+        if(camionesEnCola>0 && cantidadDeposito>30){
+            moverIzqder();
+        }
+    }
+    
     public void moverIzqder(){
-        izqder h=new izqder();
+        if(camionesEnCola==0 && semaforo==false){
+            camionesEnCola++;
+        }else if(camionesEnCola==0 && semaforo==true && cantidadDeposito>30){
+            izqder h=new izqder();
+            h.start();
+        }else if(camionesEnCola>0 && semaforo==true && cantidadDeposito>30){
+            izqder h=new izqder();
+            h.start();
+        }else if(camionesEnCola>0 && semaforo==false){
+            camionesEnCola++;
+        }    
+    }
+    
+    public void moverDerizq(){
+        derizq h=new derizq();
         h.start();
     }
     
@@ -109,6 +135,10 @@ public class pantalla3 extends javax.swing.JFrame {
        
         @Override
         public void run(){
+            semaforo=false;
+            if(camionesEnCola>0){
+                camionesEnCola--;
+            }
             JLabel camion=codigo.crearCamionB(anchoPantalla,"/camion1.gif");
             contenedor.add(camion);
             
@@ -120,7 +150,7 @@ public class pantalla3 extends javax.swing.JFrame {
             labelCantidadDeposito.setText("Cantidad amacenada: "+cantidadDeposito);
             JSONObject j=new JSONObject();
             try {
-                j.put("tofunction", 2);
+                j.put("tofunction", 1);
                 j.put("cantidad", -30);
                 socket.emit("modificarCantidad",j);
             } catch (JSONException ex) {
@@ -135,16 +165,24 @@ public class pantalla3 extends javax.swing.JFrame {
                 }
                 camion.setLocation(x, y);
                 repaint();
+                if(x==depositoAbajo.getWidth()+camion.getWidth()*2 || x+1==depositoAbajo.getWidth()+camion.getWidth()*2){
+                    
+                    semaforo=true;
+                    if(camionesEnCola>0){
+                        moverIzqder();
+                    }
+                }
+                
                 if(x==anchoPantalla-camion.getWidth() || x+1==anchoPantalla-camion.getWidth()){
                     try {      
                         JSONObject j2=new JSONObject();
-                        int pantallaAEnviar=listaPedidos[posicion]+3;
-                        j2.put("tofunction",pantallaAEnviar);
+//                        int pantallaAEnviar=listaPedidos[posicion]+3;
+                        j2.put("tofunction",4);
                         socket.emit("siguientePantalla",j2);
-                        posicion++;
-                        if(posicion==listaPedidos.length){
-                            posicion=0;
-                        }
+//                        posicion++;
+//                        if(posicion==listaPedidos.length){
+//                            posicion=0;
+//                        }
                     } catch (Exception e) {
                     }
                 }
@@ -177,13 +215,8 @@ public class pantalla3 extends javax.swing.JFrame {
                 l.setLocation(x, y);
                 repaint();
                 
-                if(x==0 || x-1==0){
-                    try {
-                        JSONObject j=new JSONObject();
-                        j.put("tofunction", 1);
-                    socket.emit("anteriorsiguientePantalla",j);
-                    } catch (Exception e) {
-                    }
+                if(x==depositoArriba.getWidth()-l.getWidth() || x-1==depositoArriba.getWidth()-l.getWidth()){
+                    moverIzqder();
                 }
                 if(x==0-l.getWidth()){
                     break;
@@ -225,8 +258,7 @@ public class pantalla3 extends javax.swing.JFrame {
 
     private void formKeyPressed(java.awt.event.KeyEvent evt) {//GEN-FIRST:event_formKeyPressed
         if(KeyEvent.getKeyText(evt.getKeyCode()).equals("Abajo")){
-            izqder h=new izqder();
-            h.start();
+            moverIzqder();
         }
         
         if(KeyEvent.getKeyText(evt.getKeyCode()).equals("Arriba")){

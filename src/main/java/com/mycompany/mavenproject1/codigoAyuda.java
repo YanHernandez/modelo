@@ -268,6 +268,7 @@ public class codigoAyuda {
                         @Override
                         public void call(Object... args) {
                             JSONObject obj = (JSONObject) args[0];
+                            
                             try{
                                 switch(numPantalla){
                                     case 1:
@@ -320,6 +321,9 @@ public class codigoAyuda {
                                     case 2:
                                         arranca2();
                                         break;
+                                    case 3:
+                                        devuelve3();
+                                        break;
                                     default:
                                         System.err.println(numPantalla);
                                 }
@@ -340,13 +344,14 @@ public class codigoAyuda {
                                 double cantidad = obj.getDouble("cantidad");
                                 
                                 switch(numPantalla){
-                                    case 2:
+                                    case 1:
                                         pantalla2.cantidadDeposito+=cantidad;
                                         pantalla2.labelCantidadDeposito.setText("Cantidad amacenada: "+pantalla2.cantidadDeposito);
                                         break;
                                     case 3:
                                         pantalla3.cantidadDeposito+=cantidad;
                                         pantalla3.labelCantidadDeposito.setText("Cantidad amacenada: "+pantalla3.cantidadDeposito);
+                                        pantalla3.verificarCola();
                                         break;
                                 }
                                 
@@ -363,7 +368,7 @@ public class codigoAyuda {
     
     
     public void arranca1(int numCamiones){
-        pantalla1.empezarSimulacion(numCamiones);
+        pantalla2.empezarSimulacion(numCamiones);
     }
     
     public void arranca2(){
@@ -393,6 +398,10 @@ public class codigoAyuda {
     
     public void devuelve1(){
         pantalla1.moverDerizq();
+    }
+    
+    public void devuelve3(){
+        pantalla3.moverDerizq();
     }
     
     public void moverIzqder(){
